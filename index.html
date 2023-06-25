@@ -286,7 +286,7 @@
             const dir = timer.direction;
 
             const $button = $this.find('button');
-            const $range = $this.find('input[type="range"]');
+
             const $progress = $this.find('.progress-bar');
             const $time = $this.find('div.time');
             const $title = $this.find('div.text');
@@ -528,16 +528,12 @@
                 $track.val(timer.trackID);
 
                 $('#play', $template).on('click', function () {
-                    const $this = $(this);
-
                     if (window.audioPlayer) {
                         window.audioPlayer.pause();
                         window.audioPlayer = null;
                         return;
                     }
-                    ;
                     const trackID = $track.val();
-
                     window.audioPlayer = new Audio(getTrack(trackID));
                     window.audioPlayer.play();
                 });
