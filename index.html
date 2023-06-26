@@ -14,7 +14,8 @@
         </script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"
         integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-sortablejs@latest/jquery-sortable.js"></script>
 </head>
 
 <body>
@@ -119,13 +120,23 @@
         </div>
     </template>
     <template id="settingsTemplate">
-        <div class="row g-sm-1 g-md-2">
+        <div class="setting row g-sm-1 g-md-2">
             <div class="col-sm-2 col-lg-1">
                 <label for="duration-group" class="form-label">Dauer</label>
+
                 <div class="input-group mb-3" id="duration-group">
-                    <input type="text" class="form-control" id="min" placeholder="00" min="0">
+                    <div class="input-group-text">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-grip-vertical" viewBox="0 0 16 16">
+                            <path
+                                d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" class="form-control" id="min" placeholder="00" min="0" inputmode="numeric"
+                        pattern="\d*">
                     <span class="px-1 input-group-text">:</span>
-                    <input type="text" class="form-control" id="sec" placeholder="00" min="0">
+                    <input type="text" class="form-control" id="sec" placeholder="00" min="0" inputmode="numeric"
+                        pattern="\d*">
                 </div>
             </div>
             <div class="col-sm-4 col-lg-6">
@@ -441,8 +452,8 @@
                 }, speed)
             }
 
-            
-            
+
+
 
             return new Promise(function (resolve, reject) {
                 audio.addEventListener("canplaythrough", (event) => {
@@ -491,19 +502,20 @@
                     if (timer.enabled === false) {
                         return;
                     }
-                    console.log('enable', index);
                     $(`.index-${index}`).find('button').prop("disabled", false);
                 });
             });
         }
+
+
 
         const updateSettings = function () {
             const $container = $('#settingsContainer');
             const timers = getTimers();
             timers.forEach((timer, index) => {
                 const $setting = $(`.settings-index-${index}`, $container)
-                timer.min = parseInt($('#min', $setting).val());
-                timer.sec = parseInt($('#sec', $setting).val());
+                timer.min = parseInt($('#min', $setting).val()) || timer.min;
+                timer.sec = parseInt($('#sec', $setting).val()) || timer.sec;
                 timer.title = $('#title', $setting).val();
                 timer.direction = $('#type', $setting).val();
                 timer.enabled = $('#state', $setting).val() === 'on';
@@ -519,12 +531,15 @@
             const $container = $('#settingsContainer');
             $container.empty();
 
+            const $labels = $($('#settingsTemplate').html());
+            $('label', $labels).next().remove();
+            $labels.removeClass('setting');
+            $labels.appendTo($container);
+
             getTimers().forEach((timer, index) => {
                 const $template = $($('#settingsTemplate').html());
 
-                if (index > 0) {
-                    $('label', $template).remove();
-                }
+                $('label', $template).remove();
 
                 $('#min', $template).val(timer.min);
                 $('#sec', $template).val(timer.sec);
@@ -556,8 +571,23 @@
                 $template.data('settings-index', index);
                 $template.addClass(`settings-index-${index}`);
                 $template.appendTo($container);
-
             });
+            $container.sortable({
+                // SortableJS options go here
+                // See: (https://github.com/SortableJS/Sortable#options)
+
+                handle: '.setting',
+                invertSwap: true,
+
+                onEnd: function (evt) {
+                    $('.setting', $container).each(function (index) {
+                        const $this = $(this);
+                        $this.removeClass(function (index, className) {
+                            return (className.match(/\bsettings-index-\S+/g) || []).join(' ');
+                        }).addClass(`settings-index-${index}`);
+                    });
+                }
+            })
             $('#settingsModal').modal('show');
         }
 
@@ -572,6 +602,7 @@
                 }
             })
             initPlayer();
+
         });
 
     </script>
