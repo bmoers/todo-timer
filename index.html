@@ -286,6 +286,8 @@
             const dir = timer.direction;
 
             const $button = $this.find('button');
+            $button.text('loading...');
+            $button.prop("disabled", true);
 
             const $progress = $this.find('.progress-bar');
             const $time = $this.find('div.time');
@@ -439,19 +441,24 @@
                 }, speed)
             }
 
-            $button.text('loading...');
-            audio.addEventListener("canplaythrough", (event) => {
-                reset();
-                progress(0);
-                $button.on('click', () => {
-                    if (settings.status === stopped) {
-                        start()
-                    } else {
-                        stop()
-                    }
-                });
-            }, { once: true });
-            audio.load();
+            
+            
+
+            return new Promise(function (resolve, reject) {
+                audio.addEventListener("canplaythrough", (event) => {
+                    reset();
+                    progress(0);
+                    resolve();
+                    $button.on('click', () => {
+                        if (settings.status === stopped) {
+                            start()
+                        } else {
+                            stop()
+                        }
+                    });
+                }, { once: true });
+                audio.load();
+            });
 
         }
 
@@ -465,20 +472,28 @@
             const $musicBox = $('#musicbox');
             $musicBox.empty();
 
-            getTimers().forEach((timer, index) => {
+            $('#restart').on('click', function (e, b) {
+                $(this).off('click');
+                initPlayer();
+            });
+
+            Promise.all(getTimers().map((timer, index) => {
                 if (timer.enabled === false) {
-                    return;
+                    return Promise.resolve();
                 }
                 const $template = $($("#player").html());
                 $template.data('index', index);
                 $template.addClass(`index-${index}`);
                 $template.appendTo($musicBox);
-                timerTask.call($template, timer);
-            });
-
-            $('#restart').on('click', function (e, b) {
-                $(this).off('click');
-                initPlayer();
+                return timerTask.call($template, timer);
+            })).then(() => {
+                getTimers().map((timer, index) => {
+                    if (timer.enabled === false) {
+                        return;
+                    }
+                    console.log('enable', index);
+                    $(`.index-${index}`).find('button').prop("disabled", false);
+                });
             });
         }
 
