@@ -121,9 +121,8 @@
     </template>
     <template id="settingsTemplate">
         <div class="setting row g-sm-1 g-md-2">
-            <div class="col-sm-2 col-lg-1">
+            <div class="col-sm-3 col-lg-2">
                 <label for="duration-group" class="form-label">Dauer</label>
-
                 <div class="input-group mb-3" id="duration-group">
                     <div class="input-group-text">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -132,18 +131,18 @@
                                 d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
                         </svg>
                     </div>
-                    <input type="text" class="form-control" id="min" placeholder="00" min="0" inputmode="numeric"
-                        pattern="\d*">
+                    <input type="text" class="form-control text-end" id="min" placeholder="00" min="0"
+                        inputmode="numeric" pattern="\d*">
                     <span class="px-1 input-group-text">:</span>
                     <input type="text" class="form-control" id="sec" placeholder="00" min="0" inputmode="numeric"
                         pattern="\d*">
                 </div>
             </div>
-            <div class="col-sm-4 col-lg-6">
+            <div class="col-sm-3 col-lg-5">
                 <label for="title" class="form-label">Aufgabe</label>
                 <input type="text" class="form-control" id="title">
             </div>
-            <div class="col-sm-2 col-md-1">
+            <div class="col-sm-2 col-lg-1">
                 <label for="type" class="form-label">Typ</label>
                 <select class="form-select" id="type">
                     <option value="down">zügig</option>
@@ -204,7 +203,6 @@
                 name: 'Iron Man',
                 file: 'iron-man-01.mp3'
             }
-
         };
 
         const timerTemplate = {
